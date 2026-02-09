@@ -605,6 +605,26 @@
       animation: dialog-in var(--transition-base) ease;
       transition: background-color var(--transition-slow);
     }
+
+    /* Auth Modal */
+    .dialog-overlay {
+      display: none; position: fixed; inset: 0; background-color: var(--bg-overlay);
+      z-index: 8000; align-items: center; justify-content: center;
+    }
+    .dialog-overlay.visible { display: flex; }
+    .dialog-box {
+      background-color: var(--bg-primary); border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl); padding: 28px; width: 100%; max-width: 400px; margin: 16px;
+      animation: dialog-in var(--transition-base) ease;
+      transition: background-color var(--transition-slow);
+    }
+    #auth-title {
+      font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);
+    }
+    #auth-form input[type="email"],
+    #auth-form input[type="password"] {
+      width: 100%; box-sizing: border-box;
+    }
     @keyframes dialog-in { from { opacity: 0; transform: scale(0.95) translateY(-8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
     .dialog-title { font-size: 1.0625rem; font-weight: 700; margin-bottom: 8px; }
     .dialog-message { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px; }
@@ -698,6 +718,7 @@
       .board-view { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <div id="app">
@@ -717,6 +738,7 @@
         <span class="keyboard-hint-group"><kbd id="kbd-save">⌘N</kbd><span class="keyboard-hint-label">Save</span></span>
       </nav>
       <div class="header-actions">
+        <div id="user-indicator"></div>
         <button id="theme-toggle" aria-label="Toggle theme">
           <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
           <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -893,6 +915,35 @@
     </div>
   </nav>
 
+  <!-- AUTH MODAL -->
+  <div id="auth-overlay" class="dialog-overlay">
+    <div class="dialog-box" style="max-width: 400px;">
+      <h2 id="auth-title">Sign In to TaskFlow</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 20px;">Sync your tasks across all devices</p>
+
+      <div id="auth-form">
+        <input type="email" id="auth-email" placeholder="Email" class="detail-input" style="margin-bottom: 10px;" />
+        <input type="password" id="auth-password" placeholder="Password" class="detail-input" style="margin-bottom: 10px;" />
+
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <button class="btn-primary" onclick="handleAuth('signin')" style="flex: 1;">Sign In</button>
+          <button class="btn-ghost" onclick="handleAuth('signup')" style="flex: 1;">Sign Up</button>
+        </div>
+
+        <div style="text-align: center; margin: 16px 0; color: var(--text-tertiary); font-size: 0.75rem;">OR</div>
+
+        <button class="btn-ghost" onclick="handleOAuth('google')" style="width: 100%; margin-bottom: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+      </div>
+
+      <div style="text-align: center; margin-top: 20px;">
+        <button class="btn-ghost" onclick="closeAuth()">Continue Offline</button>
+      </div>
+    </div>
+  </div>
+
   <script>
 (function () {
   'use strict';
@@ -904,6 +955,28 @@
   const SAVE_DEBOUNCE = 2000;
   const PRIORITIES = ['high', 'medium', 'low', 'none'];
   const PRIORITY_ORDER = { high: 0, medium: 1, low: 2, none: 3 };
+
+  // Supabase configuratie
+  const SUPABASE_URL = 'https://xwqzwmkcbxdpoxaelglb.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3cXp3bWtjYnhkcG94YWVsZ2xiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2NTc0MDgsImV4cCI6MjA4NjIzMzQwOH0._gbiAENCB8U-uX4cighHNlkNR-_htfc9Xe-I2Lwr8cE';
+  const ENABLE_SYNC = true; // Feature flag
+
+  // Initialiseer Supabase client
+  let supabase = null;
+  let currentUser = null;
+
+  // Wacht tot Supabase SDK geladen is
+  function initSupabase() {
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('Supabase client initialized:', supabase ? 'OK' : 'FAILED');
+      return true;
+    }
+    return false;
+  }
+
+  // Probeer direct te initialiseren
+  initSupabase();
 
   // ================================================================
   // HELPERS
@@ -1014,7 +1087,7 @@
   }
 
   function sanitizeProject(p) {
-    return { id: p.id || uid(), name: p.name || 'Project', color: p.color || '#5b6af0', order: typeof p.order === 'number' ? p.order : 0, createdAt: p.createdAt || new Date().toISOString() };
+    return { id: p.id || uid(), name: p.name || 'Project', color: p.color || '#5b6af0', order: typeof p.order === 'number' ? p.order : 0, createdAt: p.createdAt || new Date().toISOString(), updatedAt: p.updatedAt || new Date().toISOString() };
   }
 
   function sanitizeTag(t) {
@@ -1035,9 +1108,276 @@
   function forceSave() { clearTimeout(saveTimer); save(); }
 
   // ================================================================
+  // CLOUD SYNC MANAGER
+  // ================================================================
+  const syncManager = {
+    online: navigator.onLine,
+    syncing: false,
+    pendingOps: [],
+    realtimeChannel: null,
+
+    async init() {
+      if (!ENABLE_SYNC || !supabase) return;
+
+      // Check if user is logged in
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        currentUser = data.session.user;
+        await this.startSync();
+      }
+
+      // Online/offline listeners
+      window.addEventListener('online', () => this.handleOnline());
+      window.addEventListener('offline', () => this.handleOffline());
+
+      // Auth state listener
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN') {
+          currentUser = session.user;
+          this.startSync();
+        } else if (event === 'SIGNED_OUT') {
+          currentUser = null;
+          this.stopSync();
+        }
+      });
+    },
+
+    async startSync() {
+      showToast('Syncing...', 'info', 1000);
+      await this.pullFromCloud();
+      this.startRealtime();
+      await this.flushPending();
+    },
+
+    stopSync() {
+      if (this.realtimeChannel) {
+        supabase.removeChannel(this.realtimeChannel);
+        this.realtimeChannel = null;
+      }
+    },
+
+    async handleOnline() {
+      this.online = true;
+      if (currentUser) await this.startSync();
+    },
+
+    handleOffline() {
+      this.online = false;
+      showToast('Offline - changes saved locally', 'info');
+    },
+
+    // Push changes to cloud
+    async push(type, data) {
+      if (!this.online || !currentUser) {
+        this.pendingOps.push({ type, data, ts: Date.now() });
+        return;
+      }
+
+      try {
+        const payload = { ...data, user_id: currentUser.id };
+
+        switch(type) {
+          case 'task':
+            await supabase.from('tasks').upsert(this.localToCloudTask(payload));
+            break;
+          case 'task_delete':
+            await supabase.from('tasks').delete().eq('id', data.id);
+            break;
+          case 'project':
+            await supabase.from('projects').upsert(this.localToCloudProject(payload));
+            break;
+          case 'project_delete':
+            await supabase.from('projects').delete().eq('id', data.id);
+            break;
+          case 'tag':
+            await supabase.from('tags').upsert(payload);
+            break;
+          case 'prefs':
+            await supabase.from('user_preferences').upsert(payload);
+            break;
+        }
+      } catch (err) {
+        console.error('Sync push failed:', err);
+        this.pendingOps.push({ type, data, ts: Date.now() });
+      }
+    },
+
+    // Pull all data from cloud
+    async pullFromCloud() {
+      if (!this.online || !currentUser) return;
+
+      try {
+        const uid = currentUser.id;
+        const [tasks, projects, tags, prefs] = await Promise.all([
+          supabase.from('tasks').select('*').eq('user_id', uid),
+          supabase.from('projects').select('*').eq('user_id', uid),
+          supabase.from('tags').select('*').eq('user_id', uid),
+          supabase.from('user_preferences').select('*').eq('user_id', uid).maybeSingle()
+        ]);
+
+        const cloudState = {
+          tasks: (tasks.data || []).map(t => this.cloudToLocalTask(t)),
+          projects: (projects.data || []).map(p => this.cloudToLocalProject(p)),
+          tags: tags.data || [],
+          activeProjectId: prefs.data?.active_project_id || state.activeProjectId,
+          filters: prefs.data?.filters || state.filters,
+          theme: prefs.data?.theme || state.theme,
+          sidebarOpen: prefs.data?.sidebar_open ?? state.sidebarOpen,
+          viewMode: prefs.data?.view_mode || state.viewMode
+        };
+
+        // Merge: last-write-wins
+        state = this.merge(state, cloudState);
+        save(); // Save merged to localStorage
+        render();
+
+        showToast('Synced', 'success', 1000);
+      } catch (err) {
+        console.error('Pull failed:', err);
+        showToast('Sync failed', 'error');
+      }
+    },
+
+    merge(local, cloud) {
+      // Last-write-wins using updatedAt
+      const taskMap = new Map(local.tasks.map(t => [t.id, t]));
+      cloud.tasks.forEach(ct => {
+        const lt = taskMap.get(ct.id);
+        if (!lt || new Date(ct.updatedAt) > new Date(lt.updatedAt)) {
+          taskMap.set(ct.id, ct);
+        }
+      });
+
+      // Same for projects
+      const projMap = new Map(local.projects.map(p => [p.id, p]));
+      cloud.projects.forEach(cp => {
+        const lp = projMap.get(cp.id);
+        if (!lp || new Date(cp.updatedAt || 0) > new Date(lp.updatedAt || 0)) {
+          projMap.set(cp.id, cp);
+        }
+      });
+
+      // Tags simple replace (no updatedAt)
+      const tagMap = new Map(cloud.tags.map(t => [t.id, t]));
+      local.tags.forEach(t => { if (!tagMap.has(t.id)) tagMap.set(t.id, t); });
+
+      return {
+        ...local,
+        tasks: Array.from(taskMap.values()),
+        projects: Array.from(projMap.values()),
+        tags: Array.from(tagMap.values()),
+        activeProjectId: cloud.activeProjectId,
+        filters: cloud.filters,
+        theme: cloud.theme,
+        sidebarOpen: cloud.sidebarOpen,
+        viewMode: cloud.viewMode
+      };
+    },
+
+    startRealtime() {
+      if (this.realtimeChannel) return;
+
+      this.realtimeChannel = supabase
+        .channel('db-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => this.pullFromCloud())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => this.pullFromCloud())
+        .subscribe();
+    },
+
+    async flushPending() {
+      if (this.pendingOps.length === 0) return;
+      const ops = [...this.pendingOps];
+      this.pendingOps = [];
+      for (const op of ops) {
+        await this.push(op.type, op.data);
+      }
+    },
+
+    localToCloudTask(t) {
+      return {
+        id: t.id,
+        user_id: t.user_id,
+        project_id: t.projectId,
+        title: t.title,
+        description: t.description,
+        due_date: t.dueDate,
+        priority: t.priority,
+        completed: t.completed,
+        completed_at: t.completedAt,
+        created_at: t.createdAt,
+        updated_at: t.updatedAt,
+        order: t.order,
+        tags: t.tags,
+        subtasks: t.subtasks,
+        recurrence: t.recurrence
+      };
+    },
+
+    cloudToLocalTask(t) {
+      return {
+        id: t.id,
+        projectId: t.project_id,
+        title: t.title,
+        description: t.description,
+        dueDate: t.due_date,
+        priority: t.priority,
+        completed: t.completed,
+        completedAt: t.completed_at,
+        createdAt: t.created_at,
+        updatedAt: t.updated_at,
+        order: t.order,
+        tags: t.tags,
+        subtasks: t.subtasks,
+        recurrence: t.recurrence
+      };
+    },
+
+    localToCloudProject(p) {
+      return {
+        id: p.id,
+        user_id: p.user_id || currentUser?.id,
+        name: p.name,
+        color: p.color,
+        order: p.order,
+        created_at: p.createdAt,
+        updated_at: p.updatedAt
+      };
+    },
+
+    cloudToLocalProject(p) {
+      return {
+        id: p.id,
+        name: p.name,
+        color: p.color,
+        order: p.order,
+        createdAt: p.created_at,
+        updatedAt: p.updated_at
+      };
+    }
+  };
+
+  // ================================================================
   // STATE MUTATIONS
   // ================================================================
-  function setState(next) { state = next; scheduleSave(); render(); }
+  function setState(next) {
+    state = next;
+    scheduleSave();
+
+    // Sync preferences to cloud
+    if (ENABLE_SYNC && currentUser) {
+      syncManager.push('prefs', {
+        user_id: currentUser.id,
+        active_project_id: state.activeProjectId,
+        filters: state.filters,
+        theme: state.theme,
+        sidebar_open: state.sidebarOpen,
+        view_mode: state.viewMode,
+        updated_at: new Date().toISOString()
+      });
+    }
+
+    render();
+  }
 
   function createTask(data) {
     const pid = data.projectId || state.activeProjectId;
@@ -1045,12 +1385,25 @@
     const maxOrder = ptasks.length ? Math.max(...ptasks.map(t => t.order)) + 1 : 0;
     const task = sanitizeTask({ id: uid(), projectId: pid, title: data.title || 'New Task', description: data.description || '', dueDate: data.dueDate || null, priority: data.priority || 'none', completed: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), order: maxOrder, tags: data.tags || [], subtasks: data.subtasks || [], recurrence: data.recurrence || { type: 'none', interval: 1 } });
     setState({ ...state, tasks: [...state.tasks, task] });
+
+    // Sync to cloud
+    if (ENABLE_SYNC && currentUser) {
+      syncManager.push('task', task);
+    }
+
     showToast('Task created', 'success');
     return task;
   }
 
   function updateTask(id, patch) {
-    setState({ ...state, tasks: state.tasks.map(t => t.id === id ? { ...t, ...patch, updatedAt: new Date().toISOString() } : t) });
+    const updated = { ...patch, updatedAt: new Date().toISOString() };
+    setState({ ...state, tasks: state.tasks.map(t => t.id === id ? { ...t, ...updated } : t) });
+
+    // Sync to cloud
+    if (ENABLE_SYNC && currentUser) {
+      const task = state.tasks.find(t => t.id === id);
+      if (task) syncManager.push('task', task);
+    }
   }
 
   function deleteTask(id) {
@@ -1062,6 +1415,12 @@
     const newTasks = state.tasks.filter(t => t.id !== id);
     const usedTags = new Set(newTasks.flatMap(t => t.tags));
     setState({ ...state, tasks: newTasks, tags: state.tags.filter(t => usedTags.has(t.name)) });
+
+    // Sync delete to cloud
+    if (ENABLE_SYNC && currentUser) {
+      syncManager.push('task_delete', { id });
+    }
+
     showUndoToast('Task deleted');
   }
 
@@ -1118,8 +1477,14 @@
 
   function createProject(data) {
     const maxOrder = state.projects.length ? Math.max(...state.projects.map(p => p.order)) + 1 : 0;
-    const p = sanitizeProject({ id: uid(), name: data.name || 'New Project', color: data.color || '#5b6af0', order: maxOrder, createdAt: new Date().toISOString() });
+    const p = sanitizeProject({ id: uid(), name: data.name || 'New Project', color: data.color || '#5b6af0', order: maxOrder, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     setState({ ...state, projects: [...state.projects, p], activeProjectId: p.id });
+
+    // Sync to cloud
+    if (ENABLE_SYNC && currentUser) {
+      syncManager.push('project', p);
+    }
+
     showToast('Project created', 'success');
   }
 
@@ -1129,6 +1494,12 @@
     const tasks = state.tasks.filter(t => t.projectId !== id);
     const activeProjectId = state.activeProjectId === id ? projects[0].id : state.activeProjectId;
     setState({ ...state, projects, tasks, activeProjectId });
+
+    // Sync delete to cloud
+    if (ENABLE_SYNC && currentUser) {
+      syncManager.push('project_delete', { id });
+    }
+
     showToast('Project deleted', 'info');
   }
 
@@ -1270,6 +1641,16 @@
     const boardBtn = document.getElementById('view-board-btn');
     if (listBtn) listBtn.classList.toggle('active', state.viewMode !== 'board');
     if (boardBtn) boardBtn.classList.toggle('active', state.viewMode === 'board');
+
+    // User indicator
+    const userInd = document.getElementById('user-indicator');
+    if (userInd) {
+      if (currentUser) {
+        userInd.innerHTML = `<div style="display:flex;align-items:center;gap:8px;font-size:0.8125rem;color:var(--text-secondary);"><span>${currentUser.email}</span><button class="btn-ghost" onclick="handleSignOut()" style="padding:4px 8px;font-size:0.75rem;">Sign Out</button></div>`;
+      } else {
+        userInd.innerHTML = `<button class="btn-ghost" onclick="showAuth()" style="padding:6px 12px;">Sign In</button>`;
+      }
+    }
   }
 
   function updateFilterUI() {
@@ -2056,7 +2437,111 @@
     applyModKey();
     setup();
     render();
+
+    // Wacht tot Supabase SDK geladen is
+    function tryInitSync(attempts = 0) {
+      if (attempts > 10) {
+        console.warn('Supabase SDK niet geladen na 10 pogingen');
+        return;
+      }
+
+      if (initSupabase() && ENABLE_SYNC && supabase) {
+        syncManager.init();
+      } else {
+        setTimeout(() => tryInitSync(attempts + 1), 100);
+      }
+    }
+
+    tryInitSync();
   }
+
+  // ================================================================
+  // AUTH FUNCTIONS
+  // ================================================================
+  async function handleAuth(mode) {
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+
+    if (!email || !password) {
+      showToast('Enter email and password', 'error');
+      return;
+    }
+
+    try {
+      if (mode === 'signup') {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        showToast('Check your email to verify account', 'success');
+        closeAuth();
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        await onAuthSuccess();
+      }
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  }
+
+  async function handleOAuth(provider) {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: window.location.origin }
+    });
+    if (error) showToast(error.message, 'error');
+  }
+
+  async function onAuthSuccess() {
+    closeAuth();
+    showToast('Signed in successfully', 'success');
+
+    // Migrate local data to cloud (first-time only)
+    const { data } = await supabase.from('tasks').select('id').limit(1);
+    if (data.length === 0) {
+      await migrateLocalToCloud();
+    }
+
+    await syncManager.init();
+  }
+
+  async function migrateLocalToCloud() {
+    try {
+      const uid = currentUser.id;
+
+      await Promise.all([
+        supabase.from('projects').insert(state.projects.map(p => syncManager.localToCloudProject({ ...p, user_id: uid }))),
+        supabase.from('tasks').insert(state.tasks.map(t => syncManager.localToCloudTask({ ...t, user_id: uid }))),
+        supabase.from('tags').insert(state.tags.map(t => ({ ...t, user_id: uid })))
+      ]);
+
+      showToast('Local data migrated to cloud', 'success');
+    } catch (err) {
+      console.error('Migration failed:', err);
+    }
+  }
+
+  function showAuth() {
+    document.getElementById('auth-overlay').classList.add('visible');
+  }
+
+  function closeAuth() {
+    document.getElementById('auth-overlay').classList.remove('visible');
+  }
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    currentUser = null;
+    syncManager.stopSync();
+    showToast('Signed out', 'info');
+    render();
+  }
+
+  // Make auth functions global for onclick handlers
+  window.handleAuth = handleAuth;
+  window.handleOAuth = handleOAuth;
+  window.showAuth = showAuth;
+  window.closeAuth = closeAuth;
+  window.handleSignOut = handleSignOut;
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
