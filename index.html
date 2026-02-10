@@ -415,6 +415,16 @@
     .priority-badge.priority-medium { color: var(--priority-medium); background-color: var(--priority-medium-bg); border: 1px solid var(--priority-medium-border); }
     .priority-badge.priority-low { color: var(--priority-low); background-color: var(--priority-low-bg); border: 1px solid var(--priority-low-border); }
 
+    .roi-badge {
+      display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px;
+      border-radius: var(--radius-full); font-size: 0.6875rem; font-weight: 700;
+      letter-spacing: 0.04em; flex-shrink: 0;
+    }
+    .roi-badge-high {
+      color: var(--priority-high); background-color: var(--priority-high-bg);
+      border: 1px solid var(--priority-high-border);
+    }
+
     .task-meta-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
     .task-due-date { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; color: var(--text-tertiary); }
     .task-due-date.overdue { color: var(--priority-high); }
@@ -428,7 +438,7 @@
     .subtask-progress-text { font-size: 0.75rem; color: var(--text-tertiary); display: inline-flex; align-items: center; gap: 4px; }
     .recurrence-badge { font-size: 0.75rem; color: var(--text-tertiary); }
 
-    .task-card-meta { grid-area: meta; display: flex; align-items: flex-start; gap: 4px; }
+    .task-card-meta { grid-area: meta; display: flex; align-items: flex-start; gap: 6px; flex-wrap: wrap; }
     .task-expand-btn {
       display: flex; align-items: center; justify-content: center;
       width: 26px; height: 26px; border-radius: var(--radius-sm); color: var(--text-tertiary);
@@ -519,6 +529,61 @@
       transition: border-color var(--transition-fast), background-color var(--transition-slow);
     }
     .detail-select:focus { outline: none; border-color: var(--border-focus); box-shadow: var(--shadow-focus); }
+
+    /* ROI Indicator Styles */
+    .roi-indicator {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: var(--radius-md);
+      font-size: 0.8125rem; font-weight: 500;
+      border: 1px solid var(--border);
+      background-color: var(--bg-secondary);
+      transition: all var(--transition-fast);
+    }
+    .roi-label {
+      color: var(--text-secondary); font-weight: 600;
+    }
+    .roi-value {
+      font-size: 1.125rem; font-weight: 700;
+      color: var(--text-primary);
+    }
+    .roi-description {
+      margin-left: auto; font-size: 0.75rem;
+      padding: 2px 8px; border-radius: var(--radius-full);
+      font-weight: 600;
+    }
+    .roi-indicator.roi-high {
+      border-color: var(--priority-high-border);
+      background-color: var(--priority-high-bg);
+    }
+    .roi-indicator.roi-high .roi-value {
+      color: var(--priority-high);
+    }
+    .roi-indicator.roi-high .roi-description {
+      background-color: var(--priority-high);
+      color: white;
+    }
+    .roi-indicator.roi-medium {
+      border-color: var(--priority-medium-border);
+      background-color: var(--priority-medium-bg);
+    }
+    .roi-indicator.roi-medium .roi-value {
+      color: var(--priority-medium);
+    }
+    .roi-indicator.roi-medium .roi-description {
+      background-color: var(--priority-medium);
+      color: white;
+    }
+    .roi-indicator.roi-low {
+      border-color: var(--border);
+      background-color: var(--bg-secondary);
+    }
+    .roi-indicator.roi-low .roi-value {
+      color: var(--text-tertiary);
+    }
+    .roi-indicator.roi-low .roi-description {
+      background-color: var(--text-tertiary);
+      color: white;
+    }
 
     .tags-input-wrapper {
       display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
@@ -717,6 +782,285 @@
       .keyboard-hints { display: none; }
       .board-view { grid-template-columns: repeat(2, 1fr); }
     }
+
+    /* =========================================================
+       FOCUS & PRODUCTIVITY FEATURES
+    ========================================================= */
+
+    /* Today View */
+    .view-section { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .view-section:last-child { border-bottom: none; }
+    .view-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: var(--radius-md);
+      cursor: pointer; font-size: .875rem; font-weight: 500;
+      color: var(--text-secondary); transition: all var(--transition-fast);
+    }
+    .view-item:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+    .view-item.active { background: var(--accent-light); color: var(--accent); }
+    .view-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .view-item-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: .6875rem; font-weight: 600; background: var(--bg-tertiary);
+      color: var(--text-tertiary); padding: 1px 6px; border-radius: var(--radius-full);
+      min-width: 20px; margin-left: auto;
+    }
+    .view-item.active .view-item-badge {
+      background: var(--accent); color: var(--text-inverse);
+    }
+
+    /* Today View Content */
+    .today-view-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid var(--border);
+    }
+    .today-view-title {
+      font-size: 1.5rem; font-weight: 700; color: var(--text-primary);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .today-progress {
+      font-size: .875rem; font-weight: 600; color: var(--text-tertiary);
+      background: var(--bg-tertiary); padding: 6px 12px; border-radius: var(--radius-full);
+    }
+    .today-progress.complete {
+      background: var(--success-bg); color: var(--success);
+    }
+    .today-empty {
+      text-align: center; padding: 60px 20px;
+      color: var(--text-tertiary); font-size: .875rem;
+    }
+    .today-empty-icon {
+      font-size: 3rem; margin-bottom: 12px; opacity: 0.5;
+    }
+    .today-empty-title {
+      font-size: 1.125rem; font-weight: 600; margin-bottom: 8px;
+      color: var(--text-secondary);
+    }
+    .today-suggestion {
+      margin-top: 20px; padding: 16px; background: var(--accent-light);
+      border-radius: var(--radius-md); font-size: .8125rem; color: var(--text-secondary);
+      border-left: 3px solid var(--accent);
+    }
+
+    /* Add to Today Button */
+    .add-to-today-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; font-size: .75rem; font-weight: 600;
+      background: var(--accent-light); color: var(--accent);
+      border: 1px solid transparent; border-radius: var(--radius-md);
+      cursor: pointer; transition: all var(--transition-fast);
+    }
+    .add-to-today-btn:hover {
+      background: var(--accent); color: var(--text-inverse); border-color: var(--accent);
+    }
+    .add-to-today-btn.in-today {
+      background: var(--bg-tertiary); color: var(--text-tertiary);
+    }
+    .add-to-today-btn.in-today:hover {
+      background: var(--danger-bg); color: var(--danger);
+    }
+
+    /* Focus Mode */
+    #focus-mode-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-primary); z-index: 10000;
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      padding: 40px;
+    }
+    #focus-mode-overlay.active { display: flex; }
+    .focus-mode-container {
+      max-width: 800px; width: 100%;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+    .focus-mode-header {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .focus-mode-exit {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px; font-size: .875rem; font-weight: 600;
+      background: var(--bg-tertiary); color: var(--text-secondary);
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      cursor: pointer; transition: all var(--transition-fast);
+    }
+    .focus-mode-exit:hover {
+      background: var(--bg-card-hover); border-color: var(--border-strong);
+    }
+    .focus-task-title {
+      font-size: 2rem; font-weight: 700; color: var(--text-primary);
+      margin-bottom: 16px; line-height: 1.3;
+    }
+    .focus-task-description {
+      font-size: 1rem; color: var(--text-secondary); line-height: 1.6;
+      margin-bottom: 24px; white-space: pre-wrap;
+    }
+    .focus-task-meta {
+      display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px;
+    }
+    .focus-complete-btn {
+      padding: 16px 32px; font-size: 1.125rem; font-weight: 700;
+      background: var(--success); color: white; border: none;
+      border-radius: var(--radius-lg); cursor: pointer;
+      transition: all var(--transition-fast); box-shadow: var(--shadow-md);
+    }
+    .focus-complete-btn:hover {
+      background: #16a34a; transform: translateY(-2px); box-shadow: var(--shadow-lg);
+    }
+    .focus-timer {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; font-weight: 700; color: var(--accent);
+      font-variant-numeric: tabular-nums; margin: 20px 0;
+    }
+
+    /* Focus Filter Toggle */
+    .focus-filter-toggle {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; font-size: .8125rem; font-weight: 600;
+      background: var(--bg-tertiary); color: var(--text-secondary);
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      cursor: pointer; transition: all var(--transition-fast);
+    }
+    .focus-filter-toggle:hover {
+      background: var(--bg-card-hover); border-color: var(--border-strong);
+    }
+    .focus-filter-toggle.active {
+      background: var(--accent-light); color: var(--accent);
+      border-color: var(--accent);
+    }
+    .focus-filter-hidden-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: .6875rem; font-weight: 600; background: var(--text-tertiary);
+      color: var(--text-inverse); padding: 2px 6px; border-radius: var(--radius-full);
+      min-width: 20px;
+    }
+
+    /* Celebration Animation */
+    @keyframes celebrate {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .celebration {
+      animation: celebrate 0.5s ease-in-out;
+    }
+
+    /* Streak Badge */
+    .streak-badge {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; background: linear-gradient(135deg, #f59e0b 0%, #dc2626 100%);
+      border-radius: var(--radius-md); color: white; font-weight: 700;
+      font-size: .875rem; margin-bottom: 12px;
+    }
+    .streak-icon { font-size: 1.125rem; }
+    .streak-count { font-size: 1.25rem; }
+
+    /* =========================================================
+       TIME BLOCKING
+    ========================================================= */
+
+    /* Controls Bar */
+    .time-block-controls {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; padding: 12px 16px;
+      background: var(--bg-secondary); border-radius: var(--radius-lg);
+    }
+    .time-remaining-indicator {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .875rem; font-weight: 600; color: var(--text-secondary);
+    }
+
+    /* Section Headings */
+    .section-heading {
+      font-size: .8125rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .04em;
+      color: var(--text-tertiary); margin-bottom: 12px;
+    }
+
+    /* Unscheduled Section */
+    .unscheduled-section { margin-bottom: 24px; }
+    #unscheduled-tasks-list {
+      display: flex; flex-direction: column; gap: 8px;
+      list-style: none; padding: 0; margin: 0;
+    }
+
+    /* Duration Picker */
+    .duration-picker { display: flex; gap: 6px; margin-top: 8px; }
+    .duration-btn {
+      padding: 4px 10px; font-size: .75rem; font-weight: 600;
+      background: var(--bg-tertiary); border: 1px solid var(--border);
+      border-radius: var(--radius-md); color: var(--text-secondary);
+      cursor: pointer; transition: all var(--transition-fast);
+    }
+    .duration-btn:hover {
+      background: var(--accent-light); border-color: var(--accent); color: var(--accent);
+    }
+    .duration-btn.selected {
+      background: var(--accent); border-color: var(--accent); color: var(--text-inverse);
+    }
+    .duration-custom-input {
+      width: 60px; padding: 4px 8px; font-size: .75rem;
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      background: var(--bg-input); color: var(--text-primary);
+    }
+
+    /* Time Grid */
+    .time-grid-section { margin-bottom: 24px; }
+    #time-grid-container {
+      display: grid; grid-template-columns: 80px 1fr; gap: 1px;
+      background: var(--border); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .time-slot { display: contents; }
+    .time-label {
+      grid-column: 1; padding: 12px 10px; background: var(--bg-secondary);
+      font-size: .75rem; font-weight: 600; color: var(--text-tertiary);
+      text-align: right; display: flex; align-items: flex-start; justify-content: flex-end;
+    }
+    .time-slot-content {
+      grid-column: 2; padding: 8px; background: var(--bg-card);
+      min-height: 60px; position: relative;
+      transition: background-color var(--transition-fast);
+    }
+    .time-slot-content.drop-zone-active {
+      background: var(--accent-light); outline: 2px dashed var(--accent); outline-offset: -2px;
+    }
+    .time-slot-content.has-conflict {
+      background: var(--danger-bg); border-left: 3px solid var(--danger);
+    }
+
+    /* Scheduled Task Card */
+    .scheduled-task-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-left: 3px solid var(--accent); border-radius: var(--radius-md);
+      padding: 8px 12px; cursor: grab;
+      transition: all var(--transition-fast); position: relative;
+    }
+    .scheduled-task-card:hover {
+      box-shadow: var(--shadow-md); border-color: var(--border-strong);
+      transform: translateY(-1px);
+    }
+    .scheduled-task-card.dragging { opacity: 0.5; cursor: grabbing; }
+    .scheduled-task-card.conflict {
+      border-left-color: var(--danger); background: var(--danger-bg);
+    }
+    .scheduled-task-title {
+      font-size: .875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;
+    }
+    .scheduled-task-meta {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .6875rem; color: var(--text-tertiary);
+    }
+    .duration-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 6px; background: var(--accent-light); color: var(--accent);
+      border-radius: var(--radius-full); font-weight: 600;
+    }
+    .unschedule-btn {
+      padding: 2px 6px; font-size: .6875rem; background: transparent;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      color: var(--text-tertiary); cursor: pointer; margin-left: auto;
+    }
+    .unschedule-btn:hover {
+      background: var(--bg-tertiary); border-color: var(--border-strong);
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -749,6 +1093,20 @@
     <!-- SIDEBAR -->
     <aside id="sidebar">
       <div class="sidebar-inner">
+        <!-- Views Section -->
+        <div class="sidebar-section view-section">
+          <div class="sidebar-section-title">Views</div>
+          <div class="view-item" data-view="today" id="today-view-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>Today</span>
+            <span class="view-item-badge" id="today-badge">0/0</span>
+          </div>
+          <div class="view-item" data-view="projects" id="projects-view-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zM3 14h7v7H3v-7zm11 0h7v7h-7v-7z"/></svg>
+            <span>Projects</span>
+          </div>
+        </div>
+
         <div class="sidebar-section">
           <div class="sidebar-section-title">Projects</div>
           <ul id="projects-list"></ul>
@@ -838,11 +1196,19 @@
             <option value="priority">Priority</option>
             <option value="createdAt">Date created</option>
             <option value="title">Title A→Z</option>
+            <option value="roi">ROI Score (High First)</option>
+            <option value="impact">Impact (High First)</option>
+            <option value="effort">Effort (Low First)</option>
           </select>
           <span class="sort-chevron">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </span>
         </div>
+        <button class="focus-filter-toggle" id="focus-filter-toggle" title="Hide low priority tasks">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <span>Focus</span>
+          <span class="focus-filter-hidden-badge" id="focus-filter-badge" style="display:none;">0</span>
+        </button>
         <div id="view-toggle">
           <button id="view-list-btn" class="view-btn active" title="List view">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -885,6 +1251,29 @@
 
   <!-- TOAST CONTAINER -->
   <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- FOCUS MODE OVERLAY -->
+  <div id="focus-mode-overlay">
+    <div class="focus-mode-container">
+      <div class="focus-mode-header">
+        <div class="focus-timer" id="focus-timer" style="display:none;">25:00</div>
+        <button class="focus-mode-exit" id="focus-mode-exit">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Exit Focus (Esc)
+        </button>
+      </div>
+      <div id="focus-task-content">
+        <h1 class="focus-task-title" id="focus-task-title"></h1>
+        <div class="focus-task-description" id="focus-task-description"></div>
+        <div class="focus-task-meta" id="focus-task-meta"></div>
+        <div id="focus-task-subtasks"></div>
+        <button class="focus-complete-btn" id="focus-complete-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block;margin-right:8px;"><polyline points="20 6 9 17 4 12"/></svg>
+          Complete Task
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- DIALOG -->
   <div id="dialog-overlay">
@@ -956,6 +1345,10 @@
   const PRIORITIES = ['high', 'medium', 'low', 'none'];
   const PRIORITY_ORDER = { high: 0, medium: 1, low: 2, none: 3 };
 
+  // Impact vs Effort constants
+  const IMPACT_LEVELS = ['minimal', 'low', 'medium', 'high', 'critical'];
+  const EFFORT_LEVELS = ['trivial', 'easy', 'moderate', 'hard', 'epic'];
+
   // Supabase configuratie
   const SUPABASE_URL = 'https://xwqzwmkcbxdpoxaelglb.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3cXp3bWtjYnhkcG94YWVsZ2xiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2NTc0MDgsImV4cCI6MjA4NjIzMzQwOH0._gbiAENCB8U-uX4cighHNlkNR-_htfc9Xe-I2Lwr8cE';
@@ -1024,6 +1417,19 @@
       theme: 'light',
       sidebarOpen: true,
       viewMode: 'list',
+      // Focus & Productivity Features
+      dailyTasks: [],  // Array of task IDs for Today view
+      focusMode: false,  // Is focus mode active
+      focusTaskId: null,  // Current task in focus mode
+      activeView: 'projects',  // 'projects' | 'today' | 'week' | 'matrix'
+      focusFilter: false,  // Hide low priority tasks
+      // Time Blocking Settings
+      timeBlockSettings: {
+        startHour: 9,        // Default 9 AM
+        endHour: 17,         // Default 5 PM
+        slotInterval: 30,    // Minutes per slot (30 or 60)
+        showWeekends: false
+      },
     };
   }
 
@@ -1062,6 +1468,14 @@
       theme: r.theme === 'dark' ? 'dark' : 'light',
       sidebarOpen: r.sidebarOpen !== false,
       viewMode: r.viewMode === 'board' ? 'board' : 'list',
+      // Focus & Productivity Features
+      dailyTasks: Array.isArray(r.dailyTasks) ? r.dailyTasks : [],
+      focusMode: !!r.focusMode,
+      focusTaskId: r.focusTaskId || null,
+      activeView: ['projects', 'today', 'week', 'matrix'].includes(r.activeView) ? r.activeView : 'projects',
+      focusFilter: !!r.focusFilter,
+      // Time Blocking Settings (use default if not present)
+      timeBlockSettings: r.timeBlockSettings || d.timeBlockSettings,
     };
     if (!out.projects.find(p => p.id === out.activeProjectId)) out.activeProjectId = out.projects[0].id;
     return out;
@@ -1083,7 +1497,28 @@
       tags: Array.isArray(t.tags) ? t.tags : [],
       subtasks: Array.isArray(t.subtasks) ? t.subtasks.map(s => ({ id: s.id || uid(), title: s.title || '', completed: !!s.completed })) : [],
       recurrence: sanitizeRecurrence(t.recurrence),
+      impact: typeof t.impact === 'number' && t.impact >= 1 && t.impact <= 5 ? t.impact : 1,
+      effort: typeof t.effort === 'number' && t.effort >= 1 && t.effort <= 5 ? t.effort : 1,
+      estimatedMinutes: typeof t.estimatedMinutes === 'number' && t.estimatedMinutes > 0 ? t.estimatedMinutes : null,
+      scheduledTime: sanitizeScheduledTime(t.scheduledTime),
     };
+  }
+
+  function sanitizeScheduledTime(st) {
+    if (!st || !st.date || !st.startTime || typeof st.durationMinutes !== 'number') {
+      return null;
+    }
+    return {
+      date: st.date,  // ISO date string "2026-02-10"
+      startTime: st.startTime,  // "09:00" format (24h)
+      durationMinutes: st.durationMinutes > 0 ? st.durationMinutes : 30
+    };
+  }
+
+  function calculateROI(task) {
+    const effort = task.effort || 1; // Prevent division by zero
+    const impact = task.impact || 1;
+    return (impact / effort).toFixed(2);
   }
 
   function sanitizeProject(p) {
@@ -1458,6 +1893,18 @@
       const next = nextRecurrence(task);
       if (next) tasks = [...tasks, next];
     }
+
+    // Auto-remove completed tasks from Today view (but keep them for undo)
+    let dailyTasks = state.dailyTasks;
+    if (completing && state.dailyTasks.includes(id)) {
+      // Keep it for a moment to show completion, will be removed on next render
+      setTimeout(() => {
+        if (state.dailyTasks.includes(id)) {
+          setState({ ...state, dailyTasks: state.dailyTasks.filter(taskId => taskId !== id) });
+        }
+      }, 2000);
+    }
+
     setState({ ...state, tasks });
     if (completing) showToast('Task completed!', 'success');
   }
@@ -1516,7 +1963,7 @@
   // FILTERING
   // ================================================================
   function getFilteredTasks() {
-    const { filters, activeProjectId } = state;
+    const { filters, activeProjectId, focusFilter } = state;
     let tasks = state.tasks.filter(t => t.projectId === activeProjectId);
     if (filters.status === 'active') tasks = tasks.filter(t => !t.completed);
     else if (filters.status === 'completed') tasks = tasks.filter(t => t.completed);
@@ -1531,6 +1978,10 @@
       const q = filters.search.toLowerCase();
       tasks = tasks.filter(t => t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q) || t.tags.some(n => n.toLowerCase().includes(q)));
     }
+    // Focus Filter: Hide low/none priority tasks
+    if (focusFilter) {
+      tasks = tasks.filter(t => t.priority === 'high' || t.priority === 'medium');
+    }
     return sortTasks(tasks, filters.sortBy);
   }
 
@@ -1542,9 +1993,301 @@
         case 'priority': return (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
         case 'createdAt': return new Date(a.createdAt) - new Date(b.createdAt);
         case 'title': return a.title.localeCompare(b.title);
+        case 'roi': {
+          const roiA = parseFloat(calculateROI(a));
+          const roiB = parseFloat(calculateROI(b));
+          return roiB - roiA; // Higher ROI first
+        }
+        case 'impact': {
+          return (b.impact || 1) - (a.impact || 1); // Higher impact first
+        }
+        case 'effort': {
+          return (a.effort || 1) - (b.effort || 1); // Lower effort first
+        }
         default: return 0;
       }
     });
+  }
+
+  // ================================================================
+  // FOCUS & PRODUCTIVITY FEATURES
+  // ================================================================
+
+  // Get tasks for Today view
+  function getTodayTasks() {
+    return state.dailyTasks
+      .map(id => state.tasks.find(t => t.id === id))
+      .filter(t => t && !t.completed);
+  }
+
+  // Add task to Today view
+  function addToToday(taskId) {
+    if (state.dailyTasks.includes(taskId)) return;
+    if (state.dailyTasks.length >= 5) {
+      showToast('Maximum 5 tasks for today. Complete some first!', 'warning');
+      return;
+    }
+    setState({ ...state, dailyTasks: [...state.dailyTasks, taskId] });
+    showToast('Added to Today', 'success', 1500);
+    render();
+  }
+
+  // Remove task from Today view
+  function removeFromToday(taskId) {
+    setState({ ...state, dailyTasks: state.dailyTasks.filter(id => id !== taskId) });
+    showToast('Removed from Today', 'info', 1500);
+    render();
+  }
+
+  // Enter Focus Mode
+  function enterFocusMode(taskId) {
+    const task = state.tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    setState({ ...state, focusMode: true, focusTaskId: taskId });
+
+    const overlay = document.getElementById('focus-mode-overlay');
+    if (!overlay) return;
+
+    overlay.classList.add('active');
+    document.getElementById('focus-task-title').textContent = task.title;
+    document.getElementById('focus-task-description').textContent = task.description || 'No description';
+
+    // Update meta info
+    const meta = document.getElementById('focus-task-meta');
+    meta.innerHTML = '';
+    if (task.priority !== 'none') {
+      const badge = document.createElement('span');
+      badge.className = `priority-badge priority-${task.priority}`;
+      badge.textContent = task.priority.toUpperCase();
+      meta.appendChild(badge);
+    }
+    if (task.dueDate) {
+      const due = document.createElement('span');
+      due.style.cssText = 'font-size:0.875rem;color:var(--text-secondary);';
+      due.textContent = `Due: ${formatDate(task.dueDate)}`;
+      meta.appendChild(due);
+    }
+
+    // Render subtasks
+    const subtasksEl = document.getElementById('focus-task-subtasks');
+    if (task.subtasks && task.subtasks.length > 0) {
+      subtasksEl.innerHTML = '<div style="margin:20px 0;"><strong style="color:var(--text-secondary);font-size:0.875rem;">SUBTASKS</strong></div>';
+      task.subtasks.forEach(sub => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-card);border-radius:var(--radius-md);margin-bottom:8px;';
+        item.innerHTML = `
+          <input type="checkbox" ${sub.completed ? 'checked' : ''} onchange="toggleSubtaskInFocus('${task.id}', '${sub.id}')" style="width:18px;height:18px;cursor:pointer;">
+          <span style="flex:1;${sub.completed ? 'text-decoration:line-through;color:var(--text-tertiary);' : ''}">${sub.title}</span>
+        `;
+        subtasksEl.appendChild(item);
+      });
+    } else {
+      subtasksEl.innerHTML = '';
+    }
+  }
+
+  // Exit Focus Mode
+  function exitFocusMode() {
+    setState({ ...state, focusMode: false, focusTaskId: null });
+    document.getElementById('focus-mode-overlay').classList.remove('active');
+  }
+
+  // Complete task from Focus Mode
+  function completeFocusTask() {
+    if (state.focusTaskId) {
+      toggleTask(state.focusTaskId);
+      showToast('🎉 Great work!', 'success');
+
+      // Show celebration
+      const btn = document.getElementById('focus-complete-btn');
+      if (btn) {
+        btn.classList.add('celebration');
+        setTimeout(() => btn.classList.remove('celebration'), 500);
+      }
+
+      setTimeout(() => {
+        exitFocusMode();
+        render();
+      }, 1000);
+    }
+  }
+
+  // Toggle subtask in focus mode
+  function toggleSubtaskInFocus(taskId, subtaskId) {
+    const task = state.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    const sub = task.subtasks.find(s => s.id === subtaskId);
+    if (!sub) return;
+    sub.completed = !sub.completed;
+    updateTask(taskId, { subtasks: task.subtasks });
+    enterFocusMode(taskId); // Re-render
+  }
+
+  // Toggle Focus Filter
+  function toggleFocusFilter() {
+    const newValue = !state.focusFilter;
+    setState({ ...state, focusFilter: newValue });
+
+    const btn = document.getElementById('focus-filter-toggle');
+    const badge = document.getElementById('focus-filter-badge');
+
+    if (btn) btn.classList.toggle('active', newValue);
+
+    if (newValue) {
+      // Count hidden tasks
+      const allTasks = state.tasks.filter(t => t.projectId === state.activeProjectId && !t.completed);
+      const lowPriority = allTasks.filter(t => t.priority === 'low' || t.priority === 'none');
+      if (badge) {
+        badge.textContent = lowPriority.length;
+        badge.style.display = lowPriority.length > 0 ? 'inline-flex' : 'none';
+      }
+      showToast(`Focus Mode: Hiding ${lowPriority.length} low-priority tasks`, 'info', 2000);
+    } else {
+      if (badge) badge.style.display = 'none';
+      showToast('Focus Mode: Off', 'info', 1500);
+    }
+
+    render();
+  }
+
+  // Switch active view
+  function switchView(viewName) {
+    setState({ ...state, activeView: viewName });
+
+    // Update view buttons
+    document.querySelectorAll('.view-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.view === viewName);
+    });
+
+    render();
+  }
+
+  // ================================================================
+  // TIME BLOCKING
+  // ================================================================
+
+  /**
+   * Schedule a task into a specific time slot
+   */
+  function scheduleTask(taskId, date, startTime, durationMinutes) {
+    const task = state.tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    // Check for conflicts
+    const conflicts = detectTimeConflicts(date, startTime, durationMinutes, taskId);
+    if (conflicts.length > 0) {
+      const conflictTitles = conflicts.map(t => t.title).join(', ');
+      showToast(`Warning: Overlaps with ${conflictTitles}`, 'warning', 3000);
+    }
+
+    updateTask(taskId, {
+      scheduledTime: { date, startTime, durationMinutes },
+      estimatedMinutes: durationMinutes  // Sync estimate with scheduled duration
+    });
+
+    showToast('Task scheduled', 'success', 1500);
+    render();
+  }
+
+  /**
+   * Remove task from schedule
+   */
+  function unscheduleTask(taskId) {
+    updateTask(taskId, { scheduledTime: null });
+    showToast('Task unscheduled', 'info', 1500);
+    render();
+  }
+
+  /**
+   * Set estimated duration without scheduling
+   */
+  function setEstimatedDuration(taskId, minutes) {
+    updateTask(taskId, { estimatedMinutes: minutes });
+  }
+
+  /**
+   * Get all tasks scheduled for a specific date
+   */
+  function getScheduledTasks(date) {
+    return state.tasks.filter(t =>
+      t.scheduledTime &&
+      t.scheduledTime.date === date &&
+      !t.completed
+    );
+  }
+
+  /**
+   * Get unscheduled tasks for today
+   */
+  function getUnscheduledTodayTasks() {
+    const today = new Date().toISOString().split('T')[0];
+    return state.dailyTasks
+      .map(id => state.tasks.find(t => t.id === id))
+      .filter(t => t && !t.completed && !t.scheduledTime);
+  }
+
+  /**
+   * Detect overlapping scheduled tasks
+   */
+  function detectTimeConflicts(date, startTime, durationMinutes, excludeTaskId = null) {
+    const newStart = timeToMinutes(startTime);
+    const newEnd = newStart + durationMinutes;
+
+    const scheduled = getScheduledTasks(date);
+
+    return scheduled.filter(task => {
+      if (task.id === excludeTaskId) return false;
+
+      const taskStart = timeToMinutes(task.scheduledTime.startTime);
+      const taskEnd = taskStart + task.scheduledTime.durationMinutes;
+
+      // Check for overlap
+      return (newStart < taskEnd && newEnd > taskStart);
+    });
+  }
+
+  /**
+   * Calculate total unscheduled time for today
+   */
+  function calculateTimeRemaining() {
+    const unscheduled = getUnscheduledTodayTasks();
+    const totalMinutes = unscheduled.reduce((sum, task) => {
+      return sum + (task.estimatedMinutes || 0);
+    }, 0);
+
+    return formatDuration(totalMinutes);
+  }
+
+  // Helper: Convert "09:30" to minutes since midnight
+  function timeToMinutes(timeStr) {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
+
+  // Helper: Convert minutes to "09:30" format
+  function minutesToTime(minutes) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+  }
+
+  // Helper: Format duration for display
+  function formatDuration(minutes) {
+    if (minutes === 0) return '0m';
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    if (h === 0) return `${m}m`;
+    if (m === 0) return `${h}h`;
+    return `${h}h ${m}m`;
+  }
+
+  // Helper: Format time label for display (24h to 12h conversion)
+  function formatTimeLabel(timeStr) {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
   }
 
   // ================================================================
@@ -1628,11 +2371,24 @@
   }
 
   function renderToolbar() {
-    const proj = state.projects.find(p => p.id === state.activeProjectId);
+    // Update title based on active view
     const el = document.getElementById('view-title');
-    if (el) el.textContent = proj?.name || 'Tasks';
-    const cnt = document.getElementById('task-count');
-    if (cnt) { const n = getFilteredTasks().length; cnt.textContent = n + ' task' + (n === 1 ? '' : 's'); }
+    if (state.activeView === 'today') {
+      if (el) el.textContent = 'Today';
+      const cnt = document.getElementById('task-count');
+      const todayTasks = getTodayTasks();
+      const completed = state.dailyTasks.filter(id => {
+        const t = state.tasks.find(task => task.id === id);
+        return t && t.completed;
+      }).length;
+      if (cnt) cnt.textContent = `${completed} of ${state.dailyTasks.length} done`;
+    } else {
+      const proj = state.projects.find(p => p.id === state.activeProjectId);
+      if (el) el.textContent = proj?.name || 'Tasks';
+      const cnt = document.getElementById('task-count');
+      if (cnt) { const n = getFilteredTasks().length; cnt.textContent = n + ' task' + (n === 1 ? '' : 's'); }
+    }
+
     const ss = document.getElementById('sort-select');
     if (ss && ss.value !== state.filters.sortBy) ss.value = state.filters.sortBy;
     const si = document.getElementById('search-input');
@@ -1641,6 +2397,21 @@
     const boardBtn = document.getElementById('view-board-btn');
     if (listBtn) listBtn.classList.toggle('active', state.viewMode !== 'board');
     if (boardBtn) boardBtn.classList.toggle('active', state.viewMode === 'board');
+
+    // Focus Filter Button
+    const focusBtn = document.getElementById('focus-filter-toggle');
+    if (focusBtn) focusBtn.classList.toggle('active', state.focusFilter);
+
+    // Today Badge
+    const todayBadge = document.getElementById('today-badge');
+    if (todayBadge) {
+      const todayTasks = getTodayTasks();
+      const completed = state.dailyTasks.filter(id => {
+        const t = state.tasks.find(task => task.id === id);
+        return t && t.completed;
+      }).length;
+      todayBadge.textContent = `${completed}/${state.dailyTasks.length}`;
+    }
 
     // User indicator
     const userInd = document.getElementById('user-indicator');
@@ -1663,16 +2434,38 @@
   }
 
   function renderSidebar() {
+    // Update view items
+    document.querySelectorAll('.view-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.view === state.activeView);
+    });
+
+    // Update Today badge
+    const todayBadge = document.getElementById('today-badge');
+    if (todayBadge) {
+      const completed = state.dailyTasks.filter(id => {
+        const t = state.tasks.find(task => task.id === id);
+        return t && t.completed;
+      }).length;
+      todayBadge.textContent = `${completed}/${state.dailyTasks.length}`;
+      if (completed === state.dailyTasks.length && state.dailyTasks.length > 0) {
+        todayBadge.parentElement.classList.add('celebration');
+        setTimeout(() => todayBadge.parentElement.classList.remove('celebration'), 500);
+      }
+    }
+
+    // Render projects list
     const list = document.getElementById('projects-list');
     if (!list) return;
     list.innerHTML = '';
     [...state.projects].sort((a, b) => a.order - b.order).forEach(p => {
       const count = state.tasks.filter(t => t.projectId === p.id && !t.completed).length;
       const li = document.createElement('li');
-      li.className = 'project-item' + (p.id === state.activeProjectId ? ' active' : '');
+      li.className = 'project-item' + (p.id === state.activeProjectId && state.activeView === 'projects' ? ' active' : '');
       li.dataset.projectId = p.id;
       li.innerHTML = `<span class="project-color-dot" style="background:${esc(p.color)}"></span><span class="project-name">${esc(p.name)}</span><span class="project-count">${count || ''}</span>`;
-      li.addEventListener('click', () => setState({ ...state, activeProjectId: p.id }));
+      li.addEventListener('click', () => {
+        setState({ ...state, activeProjectId: p.id, activeView: 'projects' });
+      });
       li.addEventListener('contextmenu', e => { e.preventDefault(); showProjectMenu(e.clientX, e.clientY, p.id); });
       list.appendChild(li);
     });
@@ -1719,8 +2512,415 @@
   }
 
   function renderTaskList() {
-    if (state.viewMode === 'board') renderBoardView();
+    // Render based on active view
+    if (state.activeView === 'today') renderTodayView();
+    else if (state.viewMode === 'board') renderBoardView();
     else renderListView();
+  }
+
+  // ================================================================
+  // TIME BLOCKING RENDERING
+  // ================================================================
+
+  /**
+   * Build the time grid for Today View
+   */
+  function buildTimeGrid(date) {
+    const { startHour, endHour, slotInterval } = state.timeBlockSettings;
+    const scheduled = getScheduledTasks(date);
+
+    const gridHTML = [];
+    const startMinutes = startHour * 60;
+    const endMinutes = endHour * 60;
+
+    for (let minutes = startMinutes; minutes < endMinutes; minutes += slotInterval) {
+      const timeStr = minutesToTime(minutes);
+      const slotEnd = minutes + slotInterval;
+
+      // Find tasks starting in this slot
+      const tasksStartingHere = scheduled.filter(task => {
+        const taskStart = timeToMinutes(task.scheduledTime.startTime);
+        return taskStart === minutes;
+      });
+
+      gridHTML.push(`
+        <div class="time-slot" data-time="${timeStr}">
+          <div class="time-label">${formatTimeLabel(timeStr)}</div>
+          <div class="time-slot-content"
+               data-slot-time="${timeStr}"
+               data-slot-minutes="${minutes}">
+            ${tasksStartingHere.map(t => buildScheduledTaskCard(t)).join('')}
+          </div>
+        </div>
+      `);
+    }
+
+    return gridHTML.join('');
+  }
+
+  /**
+   * Build a scheduled task card for the time grid
+   */
+  function buildScheduledTaskCard(task) {
+    const duration = task.scheduledTime.durationMinutes;
+    const conflicts = detectTimeConflicts(
+      task.scheduledTime.date,
+      task.scheduledTime.startTime,
+      duration,
+      task.id
+    );
+
+    const conflictClass = conflicts.length > 0 ? 'conflict' : '';
+
+    const priorityColor = task.priority !== 'none' ?
+      `var(--priority-${task.priority})` : 'var(--accent)';
+
+    return `
+      <div class="scheduled-task-card ${conflictClass}"
+           data-task-id="${task.id}"
+           data-duration="${duration}"
+           draggable="true"
+           style="border-left-color: ${priorityColor}">
+        <div class="scheduled-task-title">${esc(task.title)}</div>
+        <div class="scheduled-task-meta">
+          <span class="duration-badge">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            ${formatDuration(duration)}
+          </span>
+          ${conflicts.length > 0 ? '<span style="color:var(--danger)">⚠ Conflict</span>' : ''}
+          <button class="unschedule-btn" onclick="unscheduleTask('${task.id}'); event.stopPropagation();">
+            × Remove
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Build duration picker for unscheduled tasks
+   */
+  function buildDurationPicker(task) {
+    const presets = [15, 30, 60, 120];
+    const current = task.estimatedMinutes;
+
+    return `
+      <div class="duration-picker">
+        ${presets.map(minutes => `
+          <button class="duration-btn ${current === minutes ? 'selected' : ''}"
+                  data-task-id="${task.id}"
+                  data-duration="${minutes}">
+            ${formatDuration(minutes)}
+          </button>
+        `).join('')}
+        <input type="number"
+               class="duration-custom-input"
+               placeholder="Custom"
+               min="5"
+               step="5"
+               value="${current && !presets.includes(current) ? current : ''}"
+               data-task-id="${task.id}" />
+      </div>
+    `;
+  }
+
+  // Render Today View with Time Blocking
+  function renderTodayView() {
+    const area = document.getElementById('task-list-area');
+    if (!area) return;
+
+    // Remove existing views
+    const list = document.getElementById('task-list');
+    const board = document.getElementById('board-view');
+    const empty = document.getElementById('empty-state');
+    if (list) list.style.display = 'none';
+    if (board) board.remove();
+    if (empty) empty.style.display = 'none';
+
+    let todayContainer = document.getElementById('today-view-container');
+    if (!todayContainer) {
+      todayContainer = document.createElement('div');
+      todayContainer.id = 'today-view-container';
+      area.appendChild(todayContainer);
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const unscheduledTasks = getUnscheduledTodayTasks();
+    const scheduledTasks = getScheduledTasks(today);
+    const allTodayTasks = [...unscheduledTasks, ...scheduledTasks];
+
+    const completed = allTodayTasks.filter(t => t.completed).length;
+    const progressClass = completed === allTodayTasks.length && allTodayTasks.length > 0 ? 'complete' : '';
+
+    todayContainer.innerHTML = '';
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'today-view-header';
+    header.innerHTML = `
+      <h1 class="today-view-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Today
+      </h1>
+      <div class="today-progress ${progressClass}">
+        ${completed}/${allTodayTasks.length} done
+        ${progressClass ? ' 🎉' : ''}
+      </div>
+    `;
+    todayContainer.appendChild(header);
+
+    // Time Block Controls
+    const controls = document.createElement('div');
+    controls.className = 'time-block-controls';
+    controls.innerHTML = `
+      <button id="time-settings-btn" class="btn-ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"/>
+        </svg>
+        Schedule Settings
+      </button>
+      <div class="time-remaining-indicator">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span id="time-remaining-text">${calculateTimeRemaining()} unscheduled</span>
+      </div>
+    `;
+    todayContainer.appendChild(controls);
+
+    // Unscheduled Section
+    if (unscheduledTasks.length > 0) {
+      const unscheduledSection = document.createElement('div');
+      unscheduledSection.className = 'unscheduled-section';
+      unscheduledSection.innerHTML = `
+        <h3 class="section-heading">Unscheduled Tasks</h3>
+        <ul id="unscheduled-tasks-list"></ul>
+      `;
+      todayContainer.appendChild(unscheduledSection);
+
+      const unscheduledList = unscheduledSection.querySelector('#unscheduled-tasks-list');
+      unscheduledTasks.forEach(task => {
+        const card = buildTaskCard(task, true);
+
+        // Add duration picker to card
+        const detailPanel = card.querySelector('.task-detail');
+        if (detailPanel) {
+          const durationSection = document.createElement('div');
+          durationSection.className = 'detail-section';
+          durationSection.innerHTML = `
+            <label class="detail-label">Estimated Duration</label>
+            ${buildDurationPicker(task)}
+          `;
+          detailPanel.insertBefore(durationSection, detailPanel.firstChild);
+        }
+
+        unscheduledList.appendChild(card);
+      });
+    }
+
+    // Time Grid Section
+    const gridSection = document.createElement('div');
+    gridSection.className = 'time-grid-section';
+    gridSection.innerHTML = `
+      <h3 class="section-heading">Today's Schedule</h3>
+      <div id="time-grid-container">
+        ${buildTimeGrid(today)}
+      </div>
+    `;
+    todayContainer.appendChild(gridSection);
+
+    // Setup interactions
+    const unscheduledList = todayContainer.querySelector('#unscheduled-tasks-list');
+    if (unscheduledList) {
+      bindDurationPickerEvents(unscheduledList);
+      setupUnscheduledDrag(unscheduledList);
+    }
+    setupTimeSlotDropZones();
+    setupScheduledTaskDrag();
+  }
+
+  // ================================================================
+  // TIME BLOCKING INTERACTIONS
+  // ================================================================
+
+  /**
+   * Setup drag for unscheduled tasks
+   */
+  function setupUnscheduledDrag(container) {
+    const cards = container.querySelectorAll('.task-card');
+    cards.forEach(card => {
+      const taskId = card.dataset.taskId;
+      const task = state.tasks.find(t => t.id === taskId);
+
+      if (!task || !task.estimatedMinutes) {
+        // Can't schedule without duration
+        card.draggable = false;
+        card.style.opacity = '0.6';
+        card.title = 'Set estimated duration to schedule';
+        return;
+      }
+
+      card.draggable = true;
+      card.addEventListener('dragstart', e => {
+        dragTaskId = taskId;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', JSON.stringify({
+          taskId,
+          duration: task.estimatedMinutes,
+          source: 'unscheduled'
+        }));
+        card.classList.add('task-dragging');
+      });
+
+      card.addEventListener('dragend', () => {
+        card.classList.remove('task-dragging');
+        dragTaskId = null;
+      });
+    });
+  }
+
+  /**
+   * Setup time slot drop zones
+   */
+  function setupTimeSlotDropZones() {
+    const slots = document.querySelectorAll('.time-slot-content');
+
+    slots.forEach(slot => {
+      const slotTime = slot.dataset.slotTime;
+
+      slot.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        slot.classList.add('drop-zone-active');
+      });
+
+      slot.addEventListener('dragleave', e => {
+        if (!slot.contains(e.relatedTarget)) {
+          slot.classList.remove('drop-zone-active');
+        }
+      });
+
+      slot.addEventListener('drop', e => {
+        e.preventDefault();
+        slot.classList.remove('drop-zone-active');
+
+        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const { taskId, duration } = data;
+
+        if (!taskId || !duration) return;
+
+        const today = new Date().toISOString().split('T')[0];
+        scheduleTask(taskId, today, slotTime, duration);
+      });
+    });
+  }
+
+  /**
+   * Setup drag for already scheduled tasks (rescheduling)
+   */
+  function setupScheduledTaskDrag() {
+    const scheduledCards = document.querySelectorAll('.scheduled-task-card');
+
+    scheduledCards.forEach(card => {
+      const taskId = card.dataset.taskId;
+      const duration = parseInt(card.dataset.duration);
+
+      card.addEventListener('dragstart', e => {
+        dragTaskId = taskId;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', JSON.stringify({
+          taskId,
+          duration,
+          source: 'scheduled'
+        }));
+        card.classList.add('dragging');
+      });
+
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        dragTaskId = null;
+      });
+    });
+  }
+
+  /**
+   * Bind events for duration picker buttons and input
+   */
+  function bindDurationPickerEvents(container) {
+    // Preset buttons
+    const durationBtns = container.querySelectorAll('.duration-btn');
+    durationBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const taskId = btn.dataset.taskId;
+        const duration = parseInt(btn.dataset.duration);
+        setEstimatedDuration(taskId, duration);
+
+        // Update UI
+        const picker = btn.closest('.duration-picker');
+        picker.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+
+        // Clear custom input
+        const customInput = picker.querySelector('.duration-custom-input');
+        if (customInput) customInput.value = '';
+
+        // Update time remaining
+        updateTimeRemaining();
+
+        // Enable dragging
+        const card = btn.closest('.task-card');
+        if (card) {
+          card.draggable = true;
+          card.style.opacity = '1';
+          card.title = 'Drag to schedule';
+        }
+      });
+    });
+
+    // Custom input
+    const customInputs = container.querySelectorAll('.duration-custom-input');
+    customInputs.forEach(input => {
+      input.addEventListener('change', () => {
+        const taskId = input.dataset.taskId;
+        const duration = parseInt(input.value);
+
+        if (duration > 0) {
+          setEstimatedDuration(taskId, duration);
+
+          // Deselect preset buttons
+          const picker = input.closest('.duration-picker');
+          picker.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('selected'));
+
+          updateTimeRemaining();
+
+          const card = input.closest('.task-card');
+          if (card) {
+            card.draggable = true;
+            card.style.opacity = '1';
+            card.title = 'Drag to schedule';
+          }
+        }
+      });
+    });
+  }
+
+  /**
+   * Update time remaining indicator
+   */
+  function updateTimeRemaining() {
+    const indicator = document.getElementById('time-remaining-text');
+    if (indicator) {
+      indicator.textContent = `${calculateTimeRemaining()} unscheduled`;
+    }
   }
 
   function renderListView() {
@@ -1817,6 +3017,17 @@
       return `<span class="tag-chip" style="${tag ? `background:${tag.color}20;border-color:${tag.color}40;color:${tag.color}` : ''}">${esc(name)}</span>`;
     }).join('');
 
+    // ROI Badge (only show for high ROI ≥ 2.0)
+    const roi = calculateROI(task);
+    const roiBadge = roi >= 2.0 ? `<span class="roi-badge roi-badge-high" title="High ROI: ${roi}">⚡ ${roi}</span>` : '';
+
+    // Add to Today button (same logic as list view)
+    const inToday = state.dailyTasks.includes(task.id);
+    const todayButton = state.activeView === 'projects' && !task.completed ?
+      `<button class="add-to-today-btn ${inToday ? 'in-today' : ''}" data-task-id="${task.id}" title="${inToday ? 'Remove from Today' : 'Add to Today'}" style="font-size:0.7rem;padding:2px 6px;">
+        ${inToday ? '✓ Today' : '+ Today'}
+      </button>` : '';
+
     card.innerHTML = `
       <div class="board-task-top">
         <div class="board-task-checkbox ${task.completed ? 'checked' : ''}">
@@ -1828,14 +3039,30 @@
         ${dueDateStr ? `<span class="board-due-date ${dueCls}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${esc(dueDateStr)}</span>` : ''}
         ${task.subtasks.length ? `<span class="subtask-progress-text"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>${task.subtasks.filter(s=>s.completed).length}/${task.subtasks.length}</span>` : ''}
         ${tagChips}
+        ${roiBadge}
+        ${todayButton}
       </div>
     `;
 
     const cb = card.querySelector('.board-task-checkbox');
     cb.addEventListener('click', e => { e.stopPropagation(); toggleComplete(task.id); });
 
+    // Add to Today button
+    const todayBtn = card.querySelector('.add-to-today-btn[data-task-id]');
+    if (todayBtn) {
+      todayBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        const taskId = todayBtn.dataset.taskId;
+        if (state.dailyTasks.includes(taskId)) {
+          removeFromToday(taskId);
+        } else {
+          addToToday(taskId);
+        }
+      });
+    }
+
     card.addEventListener('click', e => {
-      if (!e.target.closest('.board-task-checkbox')) openTaskModal(task);
+      if (!e.target.closest('.board-task-checkbox') && !e.target.closest('.add-to-today-btn')) openTaskModal(task);
     });
 
     card.addEventListener('contextmenu', e => { e.preventDefault(); showContextMenu(e.clientX, e.clientY, task.id); });
@@ -1879,7 +3106,7 @@
     });
   }
 
-  function buildTaskCard(task) {
+  function buildTaskCard(task, showTodayButton = false) {
     const card = document.createElement('li');
     card.className = 'task-card' + (task.completed ? ' task-completed' : '') + (selectedTaskId === task.id ? ' selected' : '');
     card.dataset.taskId = task.id;
@@ -1899,6 +3126,25 @@
     }).join('');
 
     const recIcon = task.recurrence?.type !== 'none' ? '<span class="recurrence-badge" title="Recurring">↻</span>' : '';
+
+    // ROI Badge (only show for high ROI ≥ 2.0)
+    const roi = calculateROI(task);
+    const roiBadge = roi >= 2.0 ? `<span class="roi-badge roi-badge-high" title="High ROI: ${roi}">⚡ ${roi}</span>` : '';
+
+    // Add to Today button
+    const inToday = state.dailyTasks.includes(task.id);
+    const todayButton = state.activeView === 'projects' && !showTodayButton && !task.completed ?
+      `<button class="add-to-today-btn ${inToday ? 'in-today' : ''}" data-task-id="${task.id}" title="${inToday ? 'Remove from Today' : 'Add to Today'}">
+        ${inToday ? '✓ Today' : '+ Today'}
+      </button>` : '';
+
+    const focusButton = showTodayButton ?
+      `<button class="add-to-today-btn" onclick="enterFocusMode('${task.id}')" style="margin-right:8px;" title="Enter Focus Mode">
+        🎯 Focus
+      </button>
+      <button class="add-to-today-btn in-today" data-task-id="${task.id}" title="Remove from Today">
+        ✓ Today
+      </button>` : '';
 
     card.innerHTML = `
       <div class="task-drag-handle" title="Drag to reorder">
@@ -1920,10 +3166,13 @@
             ${totalSubs > 0 ? `<span class="subtask-progress-text">☑ ${completedSubs}/${totalSubs}</span>` : ''}
             <div class="task-tags">${tagChips}</div>
             ${recIcon}
+            ${roiBadge}
           </div>
         </div>
       </div>
       <div class="task-card-meta">
+        ${focusButton}
+        ${todayButton}
         <button class="task-expand-btn" aria-label="Expand details" aria-expanded="false">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
@@ -1968,6 +3217,20 @@
     // Right click
     card.addEventListener('contextmenu', e => { e.preventDefault(); showContextMenu(e.clientX, e.clientY, task.id); });
 
+    // Add to Today button
+    const todayBtn = card.querySelector('.add-to-today-btn[data-task-id]');
+    if (todayBtn) {
+      todayBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        const taskId = todayBtn.dataset.taskId;
+        if (state.dailyTasks.includes(taskId)) {
+          removeFromToday(taskId);
+        } else {
+          addToToday(taskId);
+        }
+      });
+    }
+
     // Detail panel events
     bindDetailEvents(card, task);
 
@@ -1982,6 +3245,10 @@
       const tag = state.tags.find(t => t.name === name);
       return `<span class="tag-chip-removable" data-tag="${esc(name)}" style="${tag ? `border-color:${tag.color};color:${tag.color};background:${tag.color}20` : ''}">${esc(name)}<span class="tag-remove-btn" data-tag="${esc(name)}">×</span></span>`;
     }).join('');
+
+    const roi = calculateROI(task);
+    const roiClass = roi >= 2.0 ? 'roi-high' : roi >= 1.0 ? 'roi-medium' : 'roi-low';
+    const roiDescription = roi >= 2.0 ? 'Quick Win!' : roi >= 1.0 ? 'Good Value' : 'Consider Priority';
 
     return `
       <div class="detail-section">
@@ -2013,6 +3280,27 @@
           <option value="weekly" ${task.recurrence?.type === 'weekly' ? 'selected' : ''}>Weekly</option>
           <option value="monthly" ${task.recurrence?.type === 'monthly' ? 'selected' : ''}>Monthly</option>
         </select>
+      </div>
+      <div class="detail-row">
+        <div class="detail-section">
+          <label class="detail-label">Impact</label>
+          <select class="detail-select impact-select">
+            ${IMPACT_LEVELS.map((level, idx) => `<option value="${idx + 1}" ${task.impact === idx + 1 ? 'selected' : ''}>${cap(level)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="detail-section">
+          <label class="detail-label">Effort</label>
+          <select class="detail-select effort-select">
+            ${EFFORT_LEVELS.map((level, idx) => `<option value="${idx + 1}" ${task.effort === idx + 1 ? 'selected' : ''}>${cap(level)}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="roi-indicator ${roiClass}">
+          <span class="roi-label">ROI Score:</span>
+          <span class="roi-value">${roi}</span>
+          <span class="roi-description">${roiDescription}</span>
+        </div>
       </div>
       <div class="detail-section">
         <label class="detail-label">Tags</label>
@@ -2060,6 +3348,24 @@
     // Recurrence
     const rec = detail.querySelector('.recurrence-select');
     if (rec) rec.addEventListener('change', () => updateTask(task.id, { recurrence: { type: rec.value, interval: 1 } }));
+
+    // Impact
+    const impactSelect = detail.querySelector('.impact-select');
+    if (impactSelect) {
+      impactSelect.addEventListener('change', () => {
+        updateTask(task.id, { impact: parseInt(impactSelect.value, 10) });
+        updateROIDisplay(detail, task.id);
+      });
+    }
+
+    // Effort
+    const effortSelect = detail.querySelector('.effort-select');
+    if (effortSelect) {
+      effortSelect.addEventListener('change', () => {
+        updateTask(task.id, { effort: parseInt(effortSelect.value, 10) });
+        updateROIDisplay(detail, task.id);
+      });
+    }
 
     // Subtask toggles
     detail.addEventListener('dblclick', e => {
@@ -2170,6 +3476,24 @@
       if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
       if (e.key === 'Escape') { el.textContent = task.title; el.contentEditable = 'false'; el.removeEventListener('blur', save); }
     });
+  }
+
+  function updateROIDisplay(detail, taskId) {
+    const updatedTask = state.tasks.find(t => t.id === taskId);
+    if (!updatedTask) return;
+
+    const roi = calculateROI(updatedTask);
+    const roiValue = detail.querySelector('.roi-value');
+    const roiIndicator = detail.querySelector('.roi-indicator');
+    const roiDesc = detail.querySelector('.roi-description');
+
+    if (roiValue) roiValue.textContent = roi;
+    if (roiIndicator) {
+      roiIndicator.className = 'roi-indicator ' + (roi >= 2.0 ? 'roi-high' : roi >= 1.0 ? 'roi-medium' : 'roi-low');
+    }
+    if (roiDesc) {
+      roiDesc.textContent = roi >= 2.0 ? 'Quick Win!' : roi >= 1.0 ? 'Good Value' : 'Consider Priority';
+    }
   }
 
   // ================================================================
@@ -2393,10 +3717,26 @@
       hideContextMenu();
     });
 
+    // View switching
+    document.getElementById('today-view-btn')?.addEventListener('click', () => switchView('today'));
+    document.getElementById('projects-view-btn')?.addEventListener('click', () => switchView('projects'));
+
+    // Focus Filter Toggle
+    document.getElementById('focus-filter-toggle')?.addEventListener('click', toggleFocusFilter);
+
+    // Focus Mode
+    document.getElementById('focus-mode-exit')?.addEventListener('click', exitFocusMode);
+    document.getElementById('focus-complete-btn')?.addEventListener('click', completeFocusTask);
+
     // Keyboard shortcuts
     document.addEventListener('keydown', e => {
       const ctrl = e.ctrlKey || e.metaKey;
+      // Exit focus mode with Escape
       if (e.key === 'Escape') {
+        if (state.focusMode) {
+          exitFocusMode();
+          return;
+        }
         closeDialog();
         hideContextMenu();
         document.querySelectorAll('.task-card.selected').forEach(c => c.classList.remove('selected'));
@@ -2405,7 +3745,14 @@
       }
       const inInput = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName);
       if (inInput) return;
-      if (ctrl && e.key === 's') { e.preventDefault(); openTaskModal(); }
+      // Focus mode shortcut: F
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        if (selectedTaskId) {
+          enterFocusMode(selectedTaskId);
+        }
+      }
+      else if (ctrl && e.key === 's') { e.preventDefault(); openTaskModal(); }
       else if (ctrl && e.key === 'd') { e.preventDefault(); if (selectedTaskId) toggleComplete(selectedTaskId); }
       else if (ctrl && (e.key === 'Delete' || e.key === 'Backspace')) {
         e.preventDefault();
@@ -2542,6 +3889,22 @@
   window.showAuth = showAuth;
   window.closeAuth = closeAuth;
   window.handleSignOut = handleSignOut;
+
+  // Expose focus/productivity functions globally
+  window.addToToday = addToToday;
+  window.removeFromToday = removeFromToday;
+  window.enterFocusMode = enterFocusMode;
+  window.exitFocusMode = exitFocusMode;
+  window.completeFocusTask = completeFocusTask;
+  window.toggleSubtaskInFocus = toggleSubtaskInFocus;
+  window.toggleFocusFilter = toggleFocusFilter;
+  window.switchView = switchView;
+
+  // Expose state for debugging (read-only access recommended)
+  Object.defineProperty(window, 'appState', {
+    get: () => state,
+    set: () => console.warn('Do not modify appState directly. Use setState() or app functions.')
+  });
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
